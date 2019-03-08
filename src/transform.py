@@ -20,7 +20,10 @@ def net(image):
 def _conv_layer(net, num_filters, filter_size, strides, relu=True):
     weights_init = _conv_init_vars(net, num_filters, filter_size)
     strides_shape = [1, strides, strides, 1]
-    net = tf.nn.conv2d(net, weights_init, strides_shape, padding='SAME')
+    padding = [[0, 0], [filter_size // 2, filter_size // 2],
+               [filter_size // 2, filter_size // 2], [0, 0]]
+    net = tf.pad(net, padding, 'REFLECT')
+    net = tf.nn.conv2d(net, weights_init, strides_shape, padding='VALID')
     net = _instance_norm(net)
     if relu:
         net = tf.nn.relu(net)
